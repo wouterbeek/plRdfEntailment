@@ -207,6 +207,20 @@ rdf_property(Property, Graph):-
 
 
 
+%! rdfs_reachable(
+%!   ?Subject:or([bnode,iri]),
+%!   ?Predicate:iri,
+%!   ?Object:rdf_term
+%! ) is nondet.
+
+rdfs_reachable(S, P, O):-
+  closure0(rdfs_has0(P), S, O).
+
+rdfs_has0(P, S, O):-
+  rdfs_has(S, P, O).
+
+
+
 %! rdfs_sublass(?Subclass:iri, ?Superclass:iri) is nondet.
 
 rdfs_subclass(Class, Class):-
@@ -217,6 +231,10 @@ rdfs_subclass(C1, C2):-
   ->  closure0(rdfs_has0(P), C1, C2)
   ;   closure0(rdfs_has_backward0(P), C1, C2)
   ).
+
+rdfs_has_backward0(P, S, O):-
+  rdfs_subproperty(P0, P),
+  rdf(O, P0, S).
 
 
 
