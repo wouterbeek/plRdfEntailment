@@ -21,7 +21,7 @@ Specification of entailment rules for RDFS.
 @author Wouter Beek
 @see rdf-mt 1.1 (2014)
 @tbd Can prefix expansion be fixed?
-@version 2013/08-2013/09, 2014/06-2014/07
+@version 2013/08-2013/09, 2014/06-2014/07, 2015/02
 */
 
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
@@ -29,9 +29,10 @@ Specification of entailment rules for RDFS.
 
 :- use_module(math(math_ext)).
 
-:- use_module(plRdf(entailment/rdf_bnode_map)).
 :- use_module(plRdf(term/rdf_literal)).
 :- use_module(plRdf(term/rdf_term)).
+
+:- use_module(plRdfEntailment(rdf_bnode_map)).
 
 %! rdf:axiom(?Regime:atom, ?Axiom:compound) is nondet.
 

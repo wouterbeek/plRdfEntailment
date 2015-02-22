@@ -14,29 +14,24 @@ Takes axioms, rules, and the RDF index and performs materializations.
 @version 2013/09-2013/10, 2013/12-2014/01, 2014/06-2014/07, 2015/02
 */
 
-:- use_module(library(apply)).
 :- use_module(library(dcg/basics)).
-:- use_module(library(debug)).
-:- use_module(library(lists), except([delete/3])).
+:- use_module(library(lists), except([delete/3,subset/2])).
 :- use_module(library(option)).
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
-:- use_module(generics(deb_ext)).
 :- use_module(generics(meta_ext)).
 :- use_module(generics(setting_ext)).
-:- use_module(generics(thread_ext)).
 
-:- use_module(plDcg(dcg_cardinal)).
 :- use_module(plDcg(dcg_collection)). % DCG-meta.
-:- use_module(plDcg(dcg_content)).
+:- use_module(plDcg(dcg_content)). % DCG-meta.
 :- use_module(plDcg(dcg_generics)).
 
 :- use_module(plTms(tms)).
 :- use_module(plTms(tms_print)).
 :- use_module(plTms(doyle/doyle)).
 
-:- use_module(plRdf(entailment/rdf_ent)). % Axioms, explanations, rules.
-:- use_module(plRdf(entailment/rdfs_ent)). % Axioms, explanations, rules.
+:- use_module(plRdfEntailment(rdf_ent)). % Axioms, explanations, rules.
+:- use_module(plRdfEntailment(rdfs_ent)). % Axioms, explanations, rules.
 
 %! rdf:axiom(?Regime:atom, ?Axiom:compound) is nondet.
 

@@ -5,4 +5,4 @@
 :- [load].
 
 :- use_module(debug_project).
-%:- debug_all_files.
+:- debug_all_files.

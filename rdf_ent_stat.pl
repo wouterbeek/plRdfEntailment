@@ -3,9 +3,8 @@
   [
     classes_by_graph/2, % +Graph:atom
                         % -Count:nonneg
-    instances_by_class/3, % +Class:iri
-                          % +Graph:atom
-                          % -NumberOfIndividuals:nonneg
+    instances_by_class/2 % +Class:iri
+											   % -NumberOfIndividuals:nonneg
   ]
 ).
 
@@ -51,7 +50,7 @@ classes_by_graph(Graph, Count):-
 instances_by_class(Class, N):-
   aggregate_all(
     set(Instance),
-    rdfs_individual(Instance, Class)
+    rdfs_instance(Instance, Class),
     Instances
   ),
   length(Instances, N).

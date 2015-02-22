@@ -24,5 +24,3 @@
      plXml,
      plXsd
 ]).
-
-:- use_module(lodego(lodego)).

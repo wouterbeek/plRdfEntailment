@@ -17,7 +17,7 @@ Within a branch of a proof tree, a derivation may occur at most one time.
 The latter condition holds under structural identity, i.e. =@=/2.
 
 @author Wouter Beek
-@version 2014/07
+@version 2014/07, 2015/02
 */
 
 :- use_module(library(lists), except([delete/3])).
@@ -33,9 +33,10 @@ The latter condition holds under structural identity, i.e. =@=/2.
 
 :- use_module(plRdf(rdf_name)). % Meta-argument.
 :- use_module(plRdf(api/rdf_read)).
-:- use_module(plRdf(entailment/rdf_bnode_map)).
-:- use_module(plRdf(entailment/rdf_ent)). % Axioms, explanations, rules.
-:- use_module(plRdf(entailment/rdfs_ent)). % Axioms, explanations, rules.
+
+:- use_module(plRdfEntailment(rdf_bnode_map)).
+:- use_module(plRdfEntailment(rdf_ent)). % Axioms, explanations, rules.
+:- use_module(plRdfEntailment(rdfs_ent)). % Axioms, explanations, rules.
 
 %! rdf:axiom(?Regime:atom, ?Axiom:compound) is nondet.
 

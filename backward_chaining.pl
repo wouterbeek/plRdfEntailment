@@ -108,16 +108,17 @@ application of the subclass relation.
 @author Wouter Beek
 @tbd MERGE WITH ENTAILMENT MODULES OR WITH SEMWEB/RDFS.
 @version 2011/08-2012/03, 2012/09, 2012/11-2013/03, 2013/07-2013/09,
-         2014/02-2014/03
+         2014/02-2014/03, 2015/02
 */
 
 :- use_module(library(debug)).
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(plRdf(api/rdf_read)).
-:- use_module(plRdf(entailment/rdf_bnode_map)).
 :- use_module(plRdf(term/rdf_container)).
 :- use_module(plRdf(term/rdf_literal)).
+
+:- use_module(plRdfEntailment(rdf_bnode_map)).
 
 :- rdf_meta(rdf_db_or_axiom(+,r,r,r,?)).
 :- rdf_meta(rdfs(r,r,r,?)).
