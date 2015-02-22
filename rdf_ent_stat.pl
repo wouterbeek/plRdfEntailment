@@ -4,7 +4,7 @@
     classes_by_graph/2, % +Graph:atom
                         % -Count:nonneg
     instances_by_class/2 % +Class:iri
-											   % -NumberOfIndividuals:nonneg
+                         % -NumberOfIndividuals:nonneg
   ]
 ).
 
@@ -54,6 +54,3 @@ instances_by_class(Class, N):-
     Instances
   ),
   length(Instances, N).
-
-
-
