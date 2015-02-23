@@ -16,9 +16,6 @@
 [submodule "plSet"]
 	path = plSet
 	url = https://github.com/wouterbeek/plSet.git
-[submodule "plTms"]
-	path = plTms
-	url = https://github.com/wouterbeek/plTms.git
 [submodule "plTree"]
 	path = plTree
 	url = https://github.com/wouterbeek/plTree.git
