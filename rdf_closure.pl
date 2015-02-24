@@ -10,7 +10,7 @@
 
 :- use_module(library(apply)).
 :- use_module(library(dif)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(generics(lambda_meta)).
 
