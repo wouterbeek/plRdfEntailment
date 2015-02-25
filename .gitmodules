@@ -31,6 +31,6 @@
 [submodule "Prolog-Library-Collection"]
 	path = Prolog-Library-Collection
 	url = https://github.com/wouterbeek/Prolog-Library-Collection.git
-[submodule "plRdfEntailment"]
-	path = plRdfEntailment
-	url = https://github.com/wouterbeek/plRdfEntailment.git
+[submodule "plTms"]
+	path = plTms
+	url = https://github.com/wouterbeek/plTms.git
