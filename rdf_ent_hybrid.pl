@@ -1,8 +1,9 @@
 :- module(
   rdf_ent_hybrid,
   [
-    rdf_lean_graph/2 % +Graph:atom
-                     % -NonLeanTriple:compound
+    rdf_lean_graph/2, % +Graph:atom
+                      % -NonLeanTriple:compound
+    rdf_subproperty_closure/1 % -SubPropertiesOfRdfsSubPropertyOf:list(iri)
   ]
 ).
 
@@ -59,7 +60,7 @@ rdf_lean_graph(Graph, rdf(S1,P,O1)):-
 
 
 
-%! subproperty_closure(-SubPropertiesOfRdfsSubPropertyOf:list(iri)) is det.
+%! rdf_subproperty_closure(-SubPropertiesOfRdfsSubPropertyOf:list(iri)) is det.
 % The properties for which the RDFS reasoning rules for
 % the subproperty hierarchy apply.
 %
@@ -106,17 +107,17 @@ rdf_lean_graph(Graph, rdf(S1,P,O1)):-
 % \end{itemize}
 % ```
 
-subproperty_closure(Ps):-
+rdf_subproperty_closure(Ps):-
   rdf_global_id(rdfs:subPropertyOf, P0),
-  subproperty_closure([P0], Ps).
+  rdf_subproperty_closure([P0], Ps).
 
-%! subproperty_closure(
+%! rdf_subproperty_closure(
 %!   +Properties:list(iri),
 %!   -ClosedProperties:list(iri)
 %! ) is det.
 % Closes the given properties under the subproperty hierarchy.
 
-subproperty_closure(Ps1, Ps2):-
+rdf_subproperty_closure(Ps1, Ps2):-
   findall(
     P2,
     rdf_reachable_closure(rdfs:subPropertyOf, Ps1, P2),
@@ -151,3 +152,4 @@ rdf_has_closure(X, Ps, Y):-
   % [3]   rdfs_subPropertyOf(P', P)
   % ```
   rdf_has(X, P, Y).
+

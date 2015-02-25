@@ -1,7 +1,7 @@
 :- module(
   rdfs_subproperty_test,
   [
-    subproperty_closure/1 % -SubpropertyClosure:ordset(iri)
+    rdf_subproperty_closure/1 % -SubpropertyClosure:ordset(iri)
   ]
 ).
 
@@ -95,15 +95,15 @@ cl_{i+1}(s)_{\leq_i} :=
 
 
 
-%! subproperty_closure(-SubpropertyClosure:ordset(iri)) is det.
+%! rdf_subproperty_closure(-SubpropertyClosure:ordset(iri)) is det.
 % Returns the transitive reflexive closure of `rdfs:subPropertyOf`
 %  under itself (iterative calculation of fixpoint).
 
-subproperty_closure(ClQ0):-
+rdf_subproperty_closure(ClQ0):-
   rdf_global_id(rdfs:subPropertyOf, Q),
-  subproperty_closure([Q], ClQ0).
+  rdf_subproperty_closure([Q], ClQ0).
 
-subproperty_closure(ClQ, Sol):-
+rdf_subproperty_closure(ClQ, Sol):-
   aggregate_all(
     set(Q0),
     (
@@ -114,7 +114,7 @@ subproperty_closure(ClQ, Sol):-
   ),
   (   ClQ == ClQ0
   ->  Sol = ClQ
-  ;   subproperty_closure(ClQ0, Sol)
+  ;   rdf_subproperty_closure(ClQ0, Sol)
   ).
 
 rdfs_backward(ClQ, X, Y):-

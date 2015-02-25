@@ -37,6 +37,8 @@
 :- use_module(plRdf(api/rdfs_voc)).
 :- use_module(plRdf(term/rdf_term)).
 
+:- use_module(plRdfEntailment(rdf_ent_hybrid)).
+
 :- rdf_meta(rdfs_class(r)).
 :- rdf_meta(rdfs_class(r,?)).
 :- rdf_meta(rdfs_datatype(r)).
@@ -249,7 +251,7 @@ rdfs_has_backward0(P, S, O):-
 
 % [1] Reflexive-transitive closure of the subproperty hierarchy.
 rdfs_subproperty(P1, P2):-
-  subproperty_closure(Qs),
+  rdf_subproperty_closure(Qs),
   (   nonvar(P1)
   ->  closure0(rdfs_forward(Qs), P1, P2)
   ;   closure0(rdfs_backward(Qs), P2, P1)
