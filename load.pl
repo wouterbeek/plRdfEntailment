@@ -11,12 +11,14 @@ user:project(
 
 :- use_module(load_project).
 :- load_project([
+  lodCache,
   plc-'Prolog-Library-Collection',
   plGraph,
   plHttp,
   plLangTag,
   plRdf,
   plSet,
+  plSparql,
   plTms,
   plTree,
   plUri,

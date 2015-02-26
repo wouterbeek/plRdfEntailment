@@ -37,8 +37,6 @@
 :- use_module(plRdf(api/rdfs_voc)).
 :- use_module(plRdf(term/rdf_term)).
 
-:- use_module(plRdfEntailment(rdf_ent_hybrid)).
-
 :- rdf_meta(rdfs_class(r)).
 :- rdf_meta(rdfs_class(r,?)).
 :- rdf_meta(rdfs_datatype(r)).

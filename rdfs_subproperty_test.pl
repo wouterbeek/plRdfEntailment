@@ -1,5 +1,5 @@
 :- module(
-  rdfs_subproperty_test,
+  rdfs_subproperty_closure,
   [
     rdf_subproperty_closure/1 % -SubpropertyClosure:ordset(iri)
   ]
@@ -121,11 +121,49 @@ rdfs_backward(ClQ, X, Y):-
   member(Q, ClQ),
   rdf(Y, Q, X).
 
+/* ALTERNATIVE IMPLEMENTATION
+rdf_subproperty_closure(Ps1, Ps2):-
+  findall(
+    P2,
+    rdf_reachable_closure(rdfs:subPropertyOf, Ps1, P2),
+    Ps2
+  ).
+
+%! rdf_reachable_closure(
+%!   +From:rdf_term,
+%!   +Properties:list(iri),
+%!   -To:rdf_term
+%! ) is nondet.
+% Reachability closure over rdf_has_closure/3.
+
+rdf_reachable_closure(X, Ps, Y):-
+  closure(\X^rdf_has_closure(X, Ps), X, Y).
+
+%! rdf_has_closure(
+%!   +From:rdf_term,
+%!   +Properties:list(iri),
+%!   -To:rdf_term
+%! ) is nondet.
+% Direct links between From and To, closed under
+% the subproperty hierarchy of the given Properties.
+
+rdf_has_closure(X, Ps, Y):-
+  member(P, Ps),
+  % Either [1] belongs to the triple store or [2] and [3] do.
+  %
+  % ```prolog
+  % [1]   rdf(X, P, Y)
+  % [2]   rdf(X, P', Y)
+  % [3]   rdfs_subPropertyOf(P', P)
+  % ```
+  rdf_has(X, P, Y).
+*/
 
 
 
 
-% INITIALIZATION
+
+% INITIALIZATION %
 
 init_subproperty_test:-
   rdf_assert(ex:subPropertyOf2, ex:subPropertyOf1,  ex:subPropertyOf1,  ex),

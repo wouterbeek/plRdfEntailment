@@ -31,3 +31,9 @@
 [submodule "plTms"]
 	path = plTms
 	url = https://github.com/wouterbeek/plTms.git
+[submodule "lodCache"]
+	path = lodCache
+	url = https://github.com/wouterbeek/lodCache.git
+[submodule "plSparql"]
+	path = plSparql
+	url = https://github.com/wouterbeek/plSparql.git
