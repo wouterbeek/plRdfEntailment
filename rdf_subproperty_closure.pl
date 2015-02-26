@@ -85,11 +85,13 @@ cl_{i+1}(s)_{\leq_i} :=
 
 :- use_module(plc(generics/closure)).
 
+:- use_module(plRdf(management/rdf_prefix)).
+
 :- rdf_meta(rdf_property(r)).
 
 :- initialization(init_subproperty_test).
 
-:- rdf_register_prefix(ex, 'http://www.example.org/').
+:- rdf_reset_prefix(ex, 'http://www.example.org/').
 
 
 
