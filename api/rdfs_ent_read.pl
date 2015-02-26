@@ -33,9 +33,10 @@
 :- use_module(plc(generics/closure)).
 
 :- use_module(plRdf(api/rdf_voc)).
-:- use_module(plRdf(api/rdfs_read)).
 :- use_module(plRdf(api/rdfs_voc)).
 :- use_module(plRdf(term/rdf_term)).
+
+:- use_module(plRdfEntailment(rdf_subproperty_closure)).
 
 :- rdf_meta(rdfs_class(r)).
 :- rdf_meta(rdfs_class(r,?)).
