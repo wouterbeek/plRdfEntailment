@@ -19,12 +19,12 @@ Takes axioms, rules, and the RDF index and performs materializations.
 :- use_module(library(option)).
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
-:- use_module(generics(meta_ext)).
-:- use_module(generics(setting_ext)).
+:- use_module(plc(generics/meta_ext)).
+:- use_module(plc(generics/setting_ext)).
 
-:- use_module(plDcg(dcg_collection)). % DCG-meta.
-:- use_module(plDcg(dcg_content)). % DCG-meta.
-:- use_module(plDcg(dcg_generics)).
+:- use_module(plc(dcg/dcg_collection)). % DCG-meta.
+:- use_module(plc(dcg/dcg_content)). % DCG-meta.
+:- use_module(plc(dcg/dcg_generics)).
 
 :- use_module(plTms(tms)).
 :- use_module(plTms(tms_print)).
@@ -55,9 +55,9 @@ Takes axioms, rules, and the RDF index and performs materializations.
 :- discontiguous(rdf:rule/5).
 :- multifile(rdf:rule/5).
 :- rdf_meta(rdf:rule(?,?,t,t,?)).
-   % All axioms can be deduced as if they are the outcome of a rule.
-   rdf:rule(Regime, axiom, [], Axiom, _):-
-     rdf:axiom(Regime, Axiom).
+% All axioms can be deduced as if they are the outcome of a rule.
+rdf:rule(Regime, axiom, [], Axiom, _):-
+  rdf:axiom(Regime, Axiom).
 
 %! rdf:regime(?Regime:atom) is nondet.
 
@@ -65,14 +65,14 @@ Takes axioms, rules, and the RDF index and performs materializations.
 :- multifile(rdf:regime/1).
 
 :- predicate_options(rdf_materialize/2, 2, [
-     entailment_regimes(+list(atom)),
-     max_enumerator(+nonneg),
-     pass_to(rdf_materialize/3, 3)
-   ]).
+  entailment_regimes(+list(atom)),
+  max_enumerator(+nonneg),
+  pass_to(rdf_materialize/3, 3)
+]).
 :- predicate_options(rdf_materialize/3, 3, [
-     entailment_regimes(+list(atom)),
-     multiple_justifications(+boolean)
-   ]).
+  entailment_regimes(+list(atom)),
+  multiple_justifications(+boolean)
+]).
 
 
 

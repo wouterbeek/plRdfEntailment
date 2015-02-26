@@ -27,7 +27,7 @@ Specification of entailment rules for RDFS.
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(settings)).
 
-:- use_module(math(math_ext)).
+:- use_module(plc(math/math_ext)).
 
 :- use_module(plRdf(term/rdf_literal)).
 :- use_module(plRdf(term/rdf_term)).
@@ -61,6 +61,8 @@ Specification of entailment rules for RDFS.
 
 :- discontiguous(rdf:regime/1).
 :- multifile(rdf:regime/1).
+
+
 
 
 

@@ -25,6 +25,8 @@
 
 
 
+
+
 % RDFS 2
 rdf_entailment_pattern(
   rdf(P, rdfs:domain, Domain),

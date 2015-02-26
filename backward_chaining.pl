@@ -137,6 +137,8 @@ application of the subclass relation.
 
 
 
+
+
 rdf_db_or_axiom(M, P, rdfs:domain, C, _):-
   rdfs_domain_axiom(M, P, C),
   debug(rdfs_read, '[AX] ~w DOMAIN ~w', [P,C]).

@@ -45,6 +45,8 @@ A graph is non-lean if the substitutions made by subsumes_term/2
 
 
 
+
+
 lean(Graph):-
   findall(
     rdf(S,P,O),
@@ -68,7 +70,9 @@ lean(Graph):-
 
 
 
-% HELPERS
+
+
+% HELPERS %
 
 bnode_to_var(BNode, _):-
   rdf_is_bnode(BNode), !.
@@ -76,7 +80,9 @@ bnode_to_var(Name, Name).
 
 
 
-% INITIALIZATION
+
+
+% INITIALIZATION %
 
 init:-
   rdf_bnode(X),

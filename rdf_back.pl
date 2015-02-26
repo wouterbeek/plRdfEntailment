@@ -24,10 +24,10 @@ The latter condition holds under structural identity, i.e. =@=/2.
 :- use_module(library(option)).
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
-:- use_module(plDcg(dcg_atom)).
-:- use_module(plDcg(dcg_bracket)).
-:- use_module(plDcg(dcg_content)).
-:- use_module(plDcg(dcg_generics)).
+:- use_module(plc(dcg/dcg_atom)).
+:- use_module(plc(dcg/dcg_bracket)).
+:- use_module(plc(dcg/dcg_content)).
+:- use_module(plc(dcg/dcg_generics)).
 
 :- use_module(plTree(tree_print)).
 
@@ -58,13 +58,15 @@ The latter condition holds under structural identity, i.e. =@=/2.
 :- rdf_meta(rdf_back(t,+)).
 
 :- predicate_options(rdf_back/2, 2, [
-     entailment_regimes(+list(atom)),
-     graph(+atom)
-   ]).
+  entailment_regimes(+list(atom)),
+  graph(+atom)
+]).
 
 %! result(?Triple:compound) is nondet.
 
 :- thread_local(result/1).
+
+
 
 
 

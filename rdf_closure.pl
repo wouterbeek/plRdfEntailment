@@ -12,7 +12,7 @@
 :- use_module(library(dif)).
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
-:- use_module(generics(lambda_meta)).
+:- use_module(plc(generics/lambda_meta)).
 
 :- meta_predicate(closure(3,+,+,-)).
 :- meta_predicate(closure0(3,+,+,-,+)).

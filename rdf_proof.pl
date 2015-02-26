@@ -32,6 +32,8 @@ calculated via backward chaining.
 
 
 
+
+
 %! rdf_proof(
 %!   +Subject:or([bnode,iri]),
 %!   +Predicate:iri,

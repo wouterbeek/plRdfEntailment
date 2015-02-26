@@ -1,6 +1,7 @@
 :- module(
   rdf_ent_hybrid,
   [
+    rdf_is_lean_graph/1, % +Graph:atom
     rdf_lean_graph/2, % +Graph:atom
                       % -NonLeanTriple:compound
     rdf_subproperty_closure/1 % -SubPropertiesOfRdfsSubPropertyOf:list(iri)
@@ -12,20 +13,57 @@
 Hybrid implementation of RDF(S) entailment.
 
 @author Wouter Beek
-@version 2015/02
+@version 2014/11, 2015/02
 */
 
 :- use_module(library(apply)).
 :- use_module(library(lists), except([delete/3,subset/2])).
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
-:- use_module(generics(closure)).
-:- use_module(generics(lambda_meta)).
+:- use_module(plc(generics/closure)).
+:- use_module(plc(generics/lambda_meta)).
 
 :- use_module(plRdf(rdf_triples)).
 :- use_module(plRdf(term/rdf_instance)).
 
 
+
+
+
+%! rdf_is_lean_graph(+Lean:atom) is semidet.
+% An RDF graph is **lean** if it has no instance which is a proper subgraph
+%  of itself.
+%
+% Non-lean graphs have internal redundancy and express the same content
+% as their lean subgraphs. For example, the graph
+%
+% ```
+% ex:a ex:p _:x .
+% _:y  ex:p _:x .
+% ```
+%
+% is not lean, but
+%
+% ```
+% ex:a ex:p _:x .
+% _:x  ex:p _:x .
+% ```
+%
+% is lean.
+%
+% Ground graphs are lean.
+%
+% ### Algorithm
+%
+% The idea behind the algorith is that a non-lean graph must contain
+%  two triples: Generic and Specific such that
+%  the latter is a proper instance of the former.
+% This means that Specific entails Generic, which is therefore verbose.
+%
+% @compat RDF 1.1 Semantics
+
+rdf_is_lean_graph(Graph):-
+ \+ rdf_lean_graph(Graph, _).
 
 
 

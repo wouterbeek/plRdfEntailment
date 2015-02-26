@@ -27,7 +27,7 @@ Specification of entailment rules for RDF.
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(settings)).
 
-:- use_module(math(math_ext)).
+:- use_module(plc(math/math_ext)).
 
 :- use_module(plRdfEntailment(rdf_bnode_map)).
 
@@ -60,11 +60,13 @@ Specification of entailment rules for RDF.
 :- multifile(rdf:regime/1).
 
 :- setting(
-     rdf:max_enumerator,
-     any,
-     inf,
-     'The maximum enumerator property that is considered.'
+  rdf:max_enumerator,
+  any,
+  inf,
+  'The maximum enumerator property that is considered.'
 ).
+
+
 
 
 
