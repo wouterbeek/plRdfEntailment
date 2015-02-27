@@ -1,10 +1,10 @@
 :- module(
-  rdf_end_stat,
+  rdf_ent_stat,
   [
-    classes_by_graph/2, % +Graph:atom
-                        % -Count:nonneg
-    instances_by_class/2 % +Class:iri
-                         % -NumberOfIndividuals:nonneg
+    count_classes_by_graph/2, % +Graph:atom
+                              % -Count:nonneg
+    count_instances_by_class/2 % +Class:iri
+                               % -NumberOfIndividuals:nonneg
   ]
 ).
 
@@ -21,18 +21,18 @@ for which some form of entailment is needed.
 
 :- use_module(plRdfEntailment(api/rdfs_ent_read)).
 
-:- rdf_meta(classes_by_graph(+,-)).
-:- rdf_meta(instances_by_class(r,-)).
+:- rdf_meta(count_classes_by_graph(+,-)).
+:- rdf_meta(count_instances_by_class(r,-)).
 
 
 
 
 
-%! classes_by_graph(+Graph:atom, -Count:nonneg) is det.
+%! count_classes_by_graph(+Graph:atom, -Count:nonneg) is det.
 % Returns the number of distinct URIs that occur in the given graph
 % and that denote an RDFS class.
 
-classes_by_graph(Graph, Count):-
+count_classes_by_graph(Graph, Count):-
   aggregate_all(
     set(Class),
     rdfs_class(Class, Graph),
@@ -42,12 +42,12 @@ classes_by_graph(Graph, Count):-
 
 
 
-%! instances_by_class(
+%! count_instances_by_class(
 %!   +Class:or([bnode,iri]),
 %!   -NumberOfIndividuals:nonneg
 %! ) is det.
 
-instances_by_class(Class, N):-
+count_instances_by_class(Class, N):-
   aggregate_all(
     set(Instance),
     rdfs_instance(Instance, Class),
