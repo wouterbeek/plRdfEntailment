@@ -88,5 +88,5 @@ init:-
   rdf_bnode(X),
   rdf_bnode(Y),
   rdf_assert(rdf:a, rdf:p, X, test),
-  rdf_assert(Y,	rdf:p, X, test),
+  rdf_assert(Y, rdf:p, X, test),
   rdf_assert(rdf:b, rdf:p, X, test).
