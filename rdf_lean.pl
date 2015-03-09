@@ -38,7 +38,7 @@ A graph is non-lean if the substitutions made by subsumes_term/2
 */
 
 :- use_module(library(apply)).
-:- use_module(library(lists)).
+:- use_module(library(lists), except([delete/3,subset/2])).
 :- use_module(library(semweb/rdf_db)).
 
 :- initialization(init).

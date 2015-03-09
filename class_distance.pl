@@ -18,7 +18,7 @@
 :- use_module(plRdf(management/rdf_load_any)).
 :- use_module(plRdf(management/rdf_prefixes)).
 
-:- use_module(lodCache(lod_cache_egograph)).
+:- use_module(lodCache(lod_egograph_cache)).
 
 :- rdf_meta(most_specific_class(r,r,-)).
 :- rdf_meta(instance_of(r,r,-)).
@@ -40,8 +40,8 @@ init_test:-
 %! most_specific_class(+Resource1:iri, +Resource2:iri, -Class:iri) is nondet.
 
 most_specific_class(X, Y, D):-
-  lod_cache_egograph(X, []),
-  lod_cache_egograph(Y, []),
+  lod_egograph_cache(X, []),
+  lod_egograph_cache(Y, []),
   rdf_has(X, dcterms:subject, XC),
   rdf_has(Y, dcterms:subject, YC),
   rdf_reachable(XC, skos:broader, D),
@@ -58,7 +58,7 @@ most_specific_class(X, Y, D):-
 %! instance_of(+Instance:iri, ?Class:iri, -Path:list(iri)) is nondet.
 
 instance_of(I, C, Path):-
-  lod_cache_egograph(I, []),
+  lod_egograph_cache(I, []),
   rdf_has(I, dcterms:subject, C0),
   rdf_broader(C0, C, Path).
 
