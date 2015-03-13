@@ -91,7 +91,7 @@ cl_{i+1}(s)_{\leq_i} :=
 
 :- initialization(init_subproperty_test).
 
-:- rdf_reset_prefix(ex, 'http://www.example.org/').
+:- rdf_reset_prefix(ex, 'http://www.example.com/').
 
 
 
