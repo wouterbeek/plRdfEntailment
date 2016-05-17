@@ -20,62 +20,39 @@ The latter condition holds under structural identity, i.e. =@=/2.
 @version 2014/07, 2015/02
 */
 
-:- use_module(library(lists), except([delete/3])).
+:- use_module(library(lists)).
 :- use_module(library(option)).
-:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
+:- use_module(library(semweb/rdf11)).
 
-:- use_module(plc(dcg/dcg_atom)).
-:- use_module(plc(dcg/dcg_bracket)).
-:- use_module(plc(dcg/dcg_content)).
-:- use_module(plc(dcg/dcg_generics)).
+%! rdf:axiom(?Regime, ?Axiom) is nondet.
+%! rdf:explanation(?Regime, ?Rule, ?Explanation) is nondet.
+%! rdf:regime(?Regime) is nondet.
+%! result(?Triple) is nondet.
 
-:- use_module(plTree(tree_print)).
+:- discontiguous
+    rdf:axiom/2,
+    rdf:explanation/3,
+    rdf:regime/1.
 
-:- use_module(plRdf(rdf_name)). % Meta-argument.
-:- use_module(plRdf(api/rdf_read)).
+:- multifile
+    rdf:axiom/2,
+    rdf:explanation/3,
+    rdf:regime/1.
 
-:- use_module(plRdfEntailment(rdf_bnode_map)).
-:- use_module(plRdfEntailment(rdf_ent)). % Axioms, explanations, rules.
-:- use_module(plRdfEntailment(rdfs_ent)). % Axioms, explanations, rules.
+:- rdf_meta
+   rdf:axiom(?, t),
+   rdf_back(t),
+   rdf_back(t, +).
 
-%! rdf:axiom(?Regime:atom, ?Axiom:compound) is nondet.
-
-:- discontiguous(rdf:axiom/2).
-:- multifile(rdf:axiom/2).
-:- rdf_meta(rdf:axiom(?,t)).
-
-%! rdf:explanation(?Regime:atom, ?Rule:atom, ?Explanation:atom) is nondet.
-
-:- discontiguous(rdf:explanation/3).
-:- multifile(rdf:explanation/3).
-
-%! rdf:regime(?Regime:atom) is nondet.
-
-:- discontiguous(rdf:regime/1).
-:- multifile(rdf:regime/1).
-
-:- rdf_meta(rdf_back(t)).
-:- rdf_meta(rdf_back(t,+)).
-
-:- predicate_options(rdf_back/2, 2, [
-  entailment_regimes(+list(atom)),
-  graph(+atom)
-]).
-
-%! result(?Triple:compound) is nondet.
-
-:- thread_local(result/1).
+:- thread_local
+   result/1.
 
 
 
 
 
-%! rdf_back(+Conclusion:compound) is nondet.
-
-rdf_back(Triple):-
-  rdf_back(Triple, []).
-
-%! rdf_back(+Conclusion:compound, +Options:list(nvpair)) is nondet.
+%! rdf_back(+Triple) is nondet.
+%! rdf_back(+Triple, +Opts) is nondet.
 % The following options are supported:
 %   - `entailment_regimes(+list(atom))`
 %     The entailment regimes whose rules are used to backward chaining.
@@ -89,54 +66,44 @@ rdf_back(Triple):-
 %     in case multiple justifications exist.
 %     Default: `false`.
 
-rdf_back(Triple, Options):-
+rdf_back(Triple):-
+  rdf_back(Triple, []).
+
+
+rdf_back(Triple, Opts):-
   % Reset the previous result store, if any.
   retractall(reset(_)),
   
   % Set default options.
-  option(entailment_regimes(Regimes), Options, [rdf]),
-  option(graph(Graph), Options, user),
-  option(multiple_justifications(MultiJ), Options, false),
+  option(entailment_regimes(Regimes), Opts, [rdf]),
+  rdf_default_graph(DefG),
+  option(graph(G), Opts, DefG),
+  option(multiple_justifications(MultiJ), Opts, false),
   
   % Obtain a single query results.
-  rule_back(Regimes, Triple, Graph, [], Tree),
+  rule_back(Regimes, Triple, G, [], Tree),
   
-  % If we want to exclude duplicate results,
-  % we must record previous results.
-  (
-    MultiJ == false
-  ->
-    (
-      result(Triple)
-    ->
-      fail
-    ;
-      assert(result(Triple))
-    )
-  ;
-    true
+  % If we want to exclude duplicate results, we must record previous
+  % results.
+  (    MultiJ == false
+  ->  (result(Triple) -> fail ; assert(result(Triple)))
+  ;   true
   ),
   
   % Print the query result.
-  with_output_to(
-    user_output,
+  with_output_to(user_output,
     print_tree(Tree, [node_printer(rdf_proof_node)])
   ).
 
 
-%! rule_back(
-%!   +Regimes:list(atom),
-%!   +Conclusion:compound,
-%!   ?Graph:atom,
-%!   +CurrentPath:list(compound),
-%!   -ProofTree:compound
-%! ) is nondet.
+
+%! rule_back(+Regimes, +Conclusion, ?G, +CurrentPath, -ProofTree) is nondet.
 
 % [fact] All facts can be deduced.
 
-rule_back(_, rdf(S,P,O), Graph, Path, (fact-rdf(S,P,O))-[]):-
+rule_back(_, rdf(S,P,O), G, Path, (fact-rdf(S,P,O))-[]):-
   without_structural_variant(Path, axiom-rdf(S,P,O)),
-  rdf(S, P, O, Graph).
+  rdf(S, P, O, G).
 
 
 % [se1] Existential quantification w.r.t. the object term.
@@ -152,11 +119,11 @@ rule_back(
   var_or_bnode(BNode),
 
   without_structural_variant(Path1, se1-rdf(S,P,BNode), Path2),
-  rule_back(Regimes, rdf(S,P,O), Graph, Path2, SubTree),
+  rule_back(Regimes, rdf(S,P,O), G, Path2, SubTree),
 
   % Use an existing mapping, if it exists.
   % Add a new mapping, otherwise.
-  term_set_bnode(Graph, O, BNode).
+  term_set_bnode(G, O, BNode).
 
 
 % [se2] Existential quantification w.r.t. the subject term.
