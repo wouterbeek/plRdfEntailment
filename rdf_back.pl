@@ -51,8 +51,7 @@ The latter condition holds under structural identity, i.e. =@=/2.
 
 
 %! rdf_back(+Triple) is nondet.
-%! rdf_back(+Triply, +Opts) is nondet.
-%
+%! rdf_back(+Triple, +Opts) is nondet.
 % The following options are supported:
 %   * `entailment_regimes(+list(atom))`
 %     The entailment regimes whose rules are used to backward chaining.
@@ -75,12 +74,13 @@ rdf_back(Triple, Opts):-
   retractall(reset(_)),
   
   % Set default options.
-  option(entailment_regimes(Regimes), Options, [rdf]),
-  option(graph(Graph), Options, user),
-  option(multiple_justifications(MultiJ), Options, false),
+  option(entailment_regimes(Regimes), Opts, [rdf]),
+  rdf_default_graph(DefG),
+  option(graph(G), Opts, DefG),
+  option(multiple_justifications(MultiJ), Opts, false),
   
   % Obtain a single query results.
-  rule_back(Regimes, Triple, Graph, [], Tree),
+  rule_back(Regimes, Triple, G, [], Tree),
   
   % If we want to exclude duplicate results,
   % we must record previous results.
@@ -90,19 +90,13 @@ rdf_back(Triple, Opts):-
   with_output_to(user_output, print_tree(Tree, [node_printer(rdf_proof_node)])).
 
 
-%! rule_back(
-%!   +Regimes:list(atom),
-%!   +Conclusion:compound,
-%!   ?Graph:atom,
-%!   +CurrentPath:list(compound),
-%!   -ProofTree:compound
-%! ) is nondet.
+%! rule_back(+Regimes, +Conclusion, ?G, +CurrentPath, -ProofTree) is nondet.
 
 % [fact] All facts can be deduced.
 
-rule_back(_, rdf(S,P,O), Graph, Path, (fact-rdf(S,P,O))-[]):-
+rule_back(_, rdf(S,P,O), G, Path, (fact-rdf(S,P,O))-[]):-
   without_structural_variant(Path, axiom-rdf(S,P,O)),
-  rdf(S, P, O, Graph).
+  rdf(S, P, O, G).
 
 
 % [se1] Existential quantification w.r.t. the object term.
@@ -118,11 +112,11 @@ rule_back(
   var_or_bnode(BNode),
 
   without_structural_variant(Path1, se1-rdf(S,P,BNode), Path2),
-  rule_back(Regimes, rdf(S,P,O), Graph, Path2, SubTree),
+  rule_back(Regimes, rdf(S,P,O), G, Path2, SubTree),
 
   % Use an existing mapping, if it exists.
   % Add a new mapping, otherwise.
-  term_set_bnode(Graph, O, BNode).
+  term_set_bnode(G, O, BNode).
 
 
 % [se2] Existential quantification w.r.t. the subject term.
