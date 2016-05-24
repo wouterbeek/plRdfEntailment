@@ -1,11 +1,7 @@
 :- module(
   rdf_proof,
   [
-    rdf_proof/5 % +Subject:or([bnode,iri])
-                % +Predicate:iri
-                % +Object:rdf_term
-                % ?Graph:atom
-                % -ProofTree:pair
+    rdf_proof/5 % +S, +P, +O, ?G, -Proof
   ]
 ).
 
@@ -15,41 +11,30 @@ Deductive closure over RDFS classes,
 calculated via backward chaining.
 
 @author Wouter Beek
-@version 2014/03, 2014/06, 2014/11
+@version 2014/03, 2014/06, 2014/11, 2016/05
 */
 
-:- use_module(library(lists), except([delete/3])).
-:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
+:- use_module(library(lists)).
+:- use_module(library(semweb/rdf11)).
 
-:- use_module(plRdf(term/rdf_instance)).
+:- rdf_meta
+   rdf_proof(r, r, o, ?, -),
+   rdf_rule(-, t, t),
+   rdf_rule(-, t, t, t).
 
-:- rdf_meta(rdf_proof(r,r,o,?,-)).
-:- rdf_meta(rdf_rule(-,t,t)).
-:- rdf_meta(rdf_rule(-,t,t,t)).
-
-:- discontiguous(rdf_rule/3).
-:- discontiguous(rdf_rule/4).
-
-
+:- discontiguous
+    rdf_rule/3,
+    rdf_rule/4.
 
 
 
-%! rdf_proof(
-%!   +Subject:or([bnode,iri]),
-%!   +Predicate:iri,
-%!   +Object:rdf_term,
-%!   ?Graph:atom,
-%!   -ProofTree:pair
-%! ) is nondet.
+
+
+%! rdf_proof(+S, +P, +O, ?G, -Proof) is nondet.
 
 rdf_proof(S, P, O, G, ProofTree):-
   rdf_proof(rdf(S,P,O,G), [], ProofTree).
 
-%! rdf_proof(
-%!   +Triple:compound,
-%!   +HistoryTriples:list(compound),
-%!   -ProofTree:pair
-%! ) is det.
 
 % Deduced via a rule with no antecedents, i.e. simple entailment.
 rdf_proof(rdf(S,P,O,G), Triples, deduction(rdf(S,P,O),se)-[]):-
@@ -141,12 +126,9 @@ rdf_rule('RDFS-13',
 
 
 
-% HELPERS
+% HELPERS %
 
-%! rdf_triple_variant_member(
-%!   +Triple:compound,
-%!   +Triples:list(compound)
-%! ) is semidet.
+%! rdf_triple_variant_member(+Triple, +Triples) is semidet.
 
 rdf_triple_variant_member(rdf(S1,P,O1), Triples):-
   % Export the predicate term inside the triple compound terms
