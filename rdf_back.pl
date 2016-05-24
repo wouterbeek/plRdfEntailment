@@ -1,9 +1,8 @@
 :- module(
   rdf_back,
   [
-    rdf_back/1, % ?Triple:compound
-    rdf_back/2 % ?Triple:compound
-               % +Options:list(nvpair)
+    rdf_back/1, % ?Triple
+    rdf_back/2  % ?Triple, +Opts
   ]
 ).
 
@@ -17,79 +16,61 @@ Within a branch of a proof tree, a derivation may occur at most one time.
 The latter condition holds under structural identity, i.e. =@=/2.
 
 @author Wouter Beek
-@version 2014/07, 2015/02
+@version 2014/07, 2015/02, 2016/05
 */
 
-:- use_module(library(lists), except([delete/3])).
+:- use_module(library(lists)).
 :- use_module(library(option)).
-:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
+:- use_module(library(semweb/rdf11)).
 
-:- use_module(plc(dcg/dcg_atom)).
-:- use_module(plc(dcg/dcg_bracket)).
-:- use_module(plc(dcg/dcg_content)).
-:- use_module(plc(dcg/dcg_generics)).
+%! rdf:axiom(?Regime, ?Axiom) is nondet.
+%! rdf:explanation(?Regime, ?Rule, ?Explanation) is nondet.
+%! rdf:regime(?Regime) is nondet.
+%! result(?Triple) is nondet.
 
-:- use_module(plTree(tree_print)).
+:- discontiguous
+    rdf:axiom/2,
+    rdf:explanation/3,
+    rdf:regime/1.
 
-:- use_module(plRdf(rdf_name)). % Meta-argument.
-:- use_module(plRdf(api/rdf_read)).
+:- multifile
+    rdf:axiom/2,
+    rdf:explanation/3,
+    rdf:regime/1.
 
-:- use_module(plRdfEntailment(rdf_bnode_map)).
-:- use_module(plRdfEntailment(rdf_ent)). % Axioms, explanations, rules.
-:- use_module(plRdfEntailment(rdfs_ent)). % Axioms, explanations, rules.
+:- rdf_meta
+   rdf:axiom(?, t),
+   rdf_back(t),
+   rdf_back(t, +).
 
-%! rdf:axiom(?Regime:atom, ?Axiom:compound) is nondet.
-
-:- discontiguous(rdf:axiom/2).
-:- multifile(rdf:axiom/2).
-:- rdf_meta(rdf:axiom(?,t)).
-
-%! rdf:explanation(?Regime:atom, ?Rule:atom, ?Explanation:atom) is nondet.
-
-:- discontiguous(rdf:explanation/3).
-:- multifile(rdf:explanation/3).
-
-%! rdf:regime(?Regime:atom) is nondet.
-
-:- discontiguous(rdf:regime/1).
-:- multifile(rdf:regime/1).
-
-:- rdf_meta(rdf_back(t)).
-:- rdf_meta(rdf_back(t,+)).
-
-:- predicate_options(rdf_back/2, 2, [
-  entailment_regimes(+list(atom)),
-  graph(+atom)
-]).
-
-%! result(?Triple:compound) is nondet.
-
-:- thread_local(result/1).
+:- thread_local
+   result/1.
 
 
 
 
 
-%! rdf_back(+Conclusion:compound) is nondet.
+%! rdf_back(+Triple) is nondet.
+%! rdf_back(+Triply, +Opts) is nondet.
+%
+% The following options are supported:
+%   * `entailment_regimes(+list(atom))`
+%     The entailment regimes whose rules are used to backward chaining.
+%     Default is `[rdf]`.
+%   * `graph(+atom)`
+%     Retrict the facts that are considered
+%     to those that appear in a specific graph.
+%     Default is `user`.
+%   * `multiple_justifications(+boolean)`
+%     Whether the same result is returned multiple times,
+%     in case multiple justifications exist.
+%     Default is `false`.
 
 rdf_back(Triple):-
   rdf_back(Triple, []).
 
-%! rdf_back(+Conclusion:compound, +Options:list(nvpair)) is nondet.
-% The following options are supported:
-%   - `entailment_regimes(+list(atom))`
-%     The entailment regimes whose rules are used to backward chaining.
-%     Default: `[rdf]`.
-%   - `graph(+atom)`
-%     Retrict the facts that are considered
-%     to those that appear in a specific graph.
-%     Default: `user`.
-%   - `multiple_justifications(+boolean)`
-%     Whether the same result is returned multiple times,
-%     in case multiple justifications exist.
-%     Default: `false`.
 
-rdf_back(Triple, Options):-
+rdf_back(Triple, Opts):-
   % Reset the previous result store, if any.
   retractall(reset(_)),
   
@@ -103,25 +84,10 @@ rdf_back(Triple, Options):-
   
   % If we want to exclude duplicate results,
   % we must record previous results.
-  (
-    MultiJ == false
-  ->
-    (
-      result(Triple)
-    ->
-      fail
-    ;
-      assert(result(Triple))
-    )
-  ;
-    true
-  ),
+  (MultiJ == false -> (result(Triple) -> fail ; assert(result(Triple))) ; true),
   
   % Print the query result.
-  with_output_to(
-    user_output,
-    print_tree(Tree, [node_printer(rdf_proof_node)])
-  ).
+  with_output_to(user_output, print_tree(Tree, [node_printer(rdf_proof_node)])).
 
 
 %! rule_back(

@@ -2,32 +2,23 @@
   class_distance,
   [
     init_test/0,
-    instance_of/3, % +Instance:iri
-                   % ?Class:iri
-                   % -Path:list(iri)
-    most_specific_class/3 % +Resource1:iri
-                          % +Resource1:iri
-                          % -MostSpecificClass:iri
+    instance_of/3,        % +I, ?C, -Path
+    most_specific_class/3 % +I1, +I2, -C
   ]
 ).
 
-/** <module> Class Distance
+/** <module> Class distance
 
 @author Wouter Beek
-@version 2015/03
+@version 2015/03, 2016/05
 */
 
-:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
+:- use_module(library(rdf/rdf_io).
+:- use_module(library(semweb/rdf11).
 
-:- use_module(plSet(set_theory)).
-
-:- use_module(plRdf(management/rdf_load_any)).
-:- use_module(plRdf(management/rdf_prefixes)).
-
-:- use_module(lodCache(lod_cache)).
-
-:- rdf_meta(most_specific_class(r,r,-)).
-:- rdf_meta(instance_of(r,r,-)).
+:- rdf_meta
+   most_specific_class(r, r, -),
+   instance_of(r, r, -).
 
 
 
@@ -36,7 +27,7 @@
 init_test:-
   assert_cc_prefixes,
   assert_dbpedia_localizations,
-  rdf_load_any(
+  rdf_load_file(
     'http://downloads.dbpedia.org/3.9/en/skos_categories_en.ttl.bz2',
     [graph(categories),if(not_loaded)]
   ).
@@ -72,4 +63,3 @@ rdf_broader(C, C, []).
 rdf_broader(C, E, [C|T]):-
   rdf_has(C, skos:broader, D),
   rdf_broader(D, E, T).
-

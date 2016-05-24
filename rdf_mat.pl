@@ -1,8 +1,7 @@
 :- module(
   rdf_mat,
   [
-    rdf_materialize/2 % +Graph:atom
-                  % +Options:list(nvpair)
+    rdf_materialize/2 % +G, +Opts
   ]
 ).
 
@@ -11,27 +10,13 @@
 Takes axioms, rules, and the RDF index and performs materializations.
 
 @author Wouter Beek
-@version 2013/09-2013/10, 2013/12-2014/01, 2014/06-2014/07, 2015/02
+@version 2013/09-2013/10, 2013/12-2014/01, 2014/06-2014/07, 2015/02, 2016/05
 */
 
 :- use_module(library(dcg/basics)).
-:- use_module(library(lists), except([delete/3,subset/2])).
+:- use_module(library(lists)).
 :- use_module(library(option)).
-:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
-
-:- use_module(plc(generics/meta_ext)).
-:- use_module(plc(generics/setting_ext)).
-
-:- use_module(plc(dcg/dcg_collection)). % DCG-meta.
-:- use_module(plc(dcg/dcg_content)). % DCG-meta.
-:- use_module(plc(dcg/dcg_generics)).
-
-:- use_module(plTms(tms)).
-:- use_module(plTms(tms_print)).
-:- use_module(plTms(doyle/doyle)).
-
-:- use_module(plRdfEntailment(rdf_ent)). % Axioms, explanations, rules.
-:- use_module(plRdfEntailment(rdfs_ent)). % Axioms, explanations, rules.
+:- use_module(library(semweb/rdf11)).
 
 %! rdf:axiom(?Regime:atom, ?Axiom:compound) is nondet.
 
@@ -49,14 +34,14 @@ Takes axioms, rules, and the RDF index and performs materializations.
 %!   ?Rule:atom,
 %!   ?Premises:list(compound),
 %!   ?Conclusion:compound,
-%!   ?Graph:atom
+%!   ?G
 %! ) is nondet.
 
 :- discontiguous(rdf:rule/5).
 :- multifile(rdf:rule/5).
 :- rdf_meta(rdf:rule(?,?,t,t,?)).
 % All axioms can be deduced as if they are the outcome of a rule.
-rdf:rule(Regime, axiom, [], Axiom, _):-
+rdf:rule(Regime, axiom, [], Axiom, _) :-
   rdf:axiom(Regime, Axiom).
 
 %! rdf:regime(?Regime:atom) is nondet.
@@ -78,7 +63,7 @@ rdf:rule(Regime, axiom, [], Axiom, _):-
 
 
 
-%! rdf_materialize(?Graph:atom, +Options:list(nvpair)) is det.
+%! rdf_materialize(?G, +Opts) is det.
 % Performs all depth-one deductions for either the given RDF graph
 % or no RDF graph.
 %
@@ -107,48 +92,48 @@ rdf:rule(Regime, axiom, [], Axiom, _):-
 % For instance with `[rdf,rdfs]` we do **not** intend to use `se`.
 
 % No materialization whatsoever.
-rdf_materialize(_, Options):-
-  option(entailment_regimes(Regimes), Options),
+rdf_materialize(_, Opts) :-
+  option(entailment_regimes(Regimes), Opts),
   memberchk(none, Regimes), !.
 % Some form of materialization.
-rdf_materialize(Graph, Options1):-
+rdf_materialize(G, Opts1) :-
   % Reset flag used for debugging.
   flag(deductions, _, 0),
 
   % The default graph is called `user`.
   % This is also the default graph that rdf/3 writes to.
-  default(user, Graph),
+  default(user, G),
 
   % Make sure there is an existing/registered TMS that can be used.
   % Otherwise, we have to create a new TMS for this purpose.
   % We choose a TMS according to Doyle's orginal specification (classic!).
-  graph_tms(Graph, Tms),
+  graph_tms(G, Tms),
 
-  select_option(max_enumerator(High), Options1, Options2, inf),
+  select_option(max_enumerator(High), Opts1, Opts2, inf),
   temporarily_set_setting(
     rdf:max_enumerator,
     High,
-    rdf_materialize(Tms, Graph, Options2)
+    rdf_materialize(Tms, G, Opts2)
   ).
 
-%! rdf_materialize(+TMS:atom, +Graph:atom, +Options:list(nvpair)) is nondet.
+%! rdf_materialize(+TMS:atom, +G, +Opts) is nondet.
 % The inner loop of materialization.
 % This performs all depth-1 reasoning steps (i.e., breadth-first).
 
-rdf_materialize(Tms, Graph, Options):-
-  option(entailment_regimes(Regimes), Options, [rdf,rdfs]),
+rdf_materialize(Tms, G, Opts) :-
+  option(entailment_regimes(Regimes), Opts, [rdf,rdfs]),
 
   % NONDET
   member(Regime, Regimes),
   % NONDET
-  rdf:rule(Regime, Rule, Premises, rdf(S,P,O), Graph),
+  rdf:rule(Regime, Rule, Premises, rdf(S,P,O), G),
 
   % Only accept new justifications.
   % A proposition may have multiple justifications.
-  (   option(multiple_justifications(true), Options, false)
+  (   option(multiple_justifications(true), Opts, false)
   ->  % @tbd Checking for existing justifications does not work yet.
       \+ tms_justification(Tms, Premises, Rule, rdf(S,P,O))
-  ;   \+ rdf(S, P, O, Graph)
+  ;   \+ rdf(S, P, O, G)
   ),
 
   % Add to TMS.
@@ -161,13 +146,13 @@ rdf_materialize(Tms, Graph, Options):-
   format(user_output, '~a\n', [Msg]),
 
   % Store the result.
-  rdf_assert(S, P, O, Graph),
+  rdf_assert(S, P, O, G),
   fail.
 % Done!
-rdf_materialize(_, _, Options):-
+rdf_materialize(_, _, Opts) :-
   % DEB
   % @tbd Use if_debug/2.
-  option(entailment_regimes(Regimes), Options, [rdf,rdfs]),
+  option(entailment_regimes(Regimes), Opts, [rdf,rdfs]),
   dcg_with_output_to(atom(RegimesAtom), list(pl_term, Regimes)),
   flag(deductions, N, 0),
   format(user_output, 'Added ~w deductions (regimes: ~w).', [N,RegimesAtom]).
@@ -176,17 +161,17 @@ rdf_materialize(_, _, Options):-
 
 % Helpers
 
-%! graph_tms(+Graph:atom, -Tms:atom) is det.
+%! graph_tms(+G, -Tms:atom) is det.
 % Returns either the existing TMS for the given graph,
 % or creates and returns a new one.
 
-graph_tms(Graph, Tms):-
-  atomic_list_concat([tms,Graph], '_', Tms),
+graph_tms(G, Tms) :-
+  atomic_list_concat([tms,G], '_', Tms),
   ensure_tms(Tms).
 
-ensure_tms(Tms):-
+ensure_tms(Tms) :-
   tms(Tms), !.
-ensure_tms(Tms):-
+ensure_tms(Tms) :-
   register_tms(doyle, Tms),
   doyle_reset(Tms),
   doyle_init(Tms).
@@ -206,9 +191,8 @@ materialize_message(Tms, Justification) -->
 
 
 % All axioms can be deduced.
-rdf:rule(Regime, axiom, [], Axiom, _):-
+rdf:rule(Regime, axiom, [], Axiom, _) :-
   rdf:axiom(Regime, Axiom).
 % All facts can be deduced.
-rdf:rule(_, fact, [], rdf(S,P,O), Graph):-
-  rdf(S, P, O, Graph).
-
+rdf:rule(_, fact, [], rdf(S,P,O), G) :-
+  rdf(S, P, O, G).
