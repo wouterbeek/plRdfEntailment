@@ -167,15 +167,17 @@ rdf_has_closure(X, Ps, Y):-
 
 % INITIALIZATION %
 
-init_subproperty_test:-
-  rdf_assert(ex:subPropertyOf2, ex:subPropertyOf1,  ex:subPropertyOf1,  ex),
-  rdf_assert(ex:subPropertyOf1, rdfs:subPropertyOf, rdfs:subPropertyOf, ex),
-  rdf_assert(ex:property2,      rdfs:subPropertyOf, ex:property1,       ex),
-  rdf_assert(ex:property1,      ex:subProperty2,    ex:property,        ex),
+init_subproperty_test :-
+  M = rdf,
+  rdf_equal(ex:'', G),
+  qb_subproperty(M, ex:subPropertyOf2, ex:subPropertyOf1,  ex:subPropertyOf1,  G),
+  qb_subproperty(M, ex:subPropertyOf1, rdfs:subPropertyOf, rdfs:subPropertyOf, G),
+  qb_subproperty(M, ex:property2,      rdfs:subPropertyOf, ex:property1,       G),
+  qb_subproperty(M, ex:property1,      ex:subProperty2,    ex:property,        G),
 
   forall(
     (
-      rdf_property(P1),
+      q_property(M, P1, G),
       rdfs_subproperty_of(P1, P2),
       P1 \== P2
     ),

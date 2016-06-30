@@ -56,7 +56,7 @@ different resources.
 %   2. Instantiated to a newly created blank node.
 
 add_bnode_map(BNode, Term, G) :-
-  defgoal(rdf_default_graph, G),
+  defgoal(q_default_graph, G),
   with_mutex(rdf_bnode_map, (
     add_b2t(BNode, Term, G),
     add_t2b(Term, BNode, G)
@@ -67,7 +67,7 @@ add_b2t(BNode, Term, G) :-
 add_b2t(BNode, Term, G) :-
   b2t(G, OldB2T),
   retractall(b2t0(G, OldB2T)),
-  defgoal(rdf_create_bnode, BNode),
+  defgoal(qb_bnode, BNode),
   put_assoc(BNode, OldB2T, Term, NewB2T),
   assert(b2t0(G, NewB2T)).
 
@@ -85,8 +85,8 @@ add_t2b(Term, BNode, G) :-
 % Returns the RDF term to which the given blank node was mapped, if any.
 
 b2t(BNode, Term, G) :-
-  defgoal(rdf_default_graph, G),
-  with_mutex(rdf_bnode_map, (
+  defgoal(q_default_graph, G),
+  with_mutex(q_bnode_map, (
     b2t(G, Map),
     get_assoc(BNode, Map, Term)
   )).
@@ -97,7 +97,7 @@ b2t(BNode, Term, G) :-
 % Removes the blank node maps for the given graph.
 
 clear_bnode_map(G) :-
-  defgoal(rdf_default_graph, G),
+  defgoal(q_default_graph, G),
   with_mutex(rdf_bnode_map, (
     retractall(b2t0(G,_)),
     retractall(t2b0(G,_))
@@ -109,7 +109,7 @@ clear_bnode_map(G) :-
 % Returns the RDF term to which the given blank node was mapped, if any.
 
 t2b(Term, BNode, G) :-
-  defgoal(rdf_default_graph, G),
+  defgoal(q_default_graph, G),
   with_mutex(rdf_bnode_map, (
     t2b0(G, Map),
     get_assoc(Term, Map, BNode)
@@ -123,8 +123,8 @@ t2b(Term, BNode, G) :-
 
 % The store contains a blank node that stands for the given resource.
 term_set_bnode(Term, BNode, G) :-
-  defgoal(rdf_default_graph, G),
-  with_mutex(rdf_bnode_map, (
+  defgoal(q_default_graph, G),
+  with_mutex(q_bnode_map, (
     (   t2b0(G, Map),
         get_assoc(Term, Map, BNode)
     ->  true
@@ -132,7 +132,7 @@ term_set_bnode(Term, BNode, G) :-
         % given resource, so a new blank node is created to stand for
         % the given resource and this resource-and-blank-node-pair is
         % added to the B2T and T2B mappings.
-        rdf_bnode(BNode),
+        qb_bnode(BNode),
         add_bnode_map(BNode, Term, G)
     )
   )).

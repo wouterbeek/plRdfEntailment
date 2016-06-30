@@ -146,7 +146,7 @@ rdf_materialize(Tms, G, Opts) :-
   format(user_output, '~a\n', [Msg]),
 
   % Store the result.
-  rdf_assert(S, P, O, G),
+  qb(M, S, P, O, G),
   fail.
 % Done!
 rdf_materialize(_, _, Opts) :-

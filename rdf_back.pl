@@ -75,7 +75,7 @@ rdf_back(Triple, Opts):-
   
   % Set default options.
   option(entailment_regimes(Regimes), Opts, [rdf]),
-  rdf_default_graph(DefG),
+  q_default_graph(DefG),
   option(graph(G), Opts, DefG),
   option(multiple_justifications(MultiJ), Opts, false),
   

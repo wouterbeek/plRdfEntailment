@@ -38,7 +38,8 @@ A graph is non-lean if the substitutions made by subsumes_term/2
 */
 
 :- use_module(library(apply)).
-:- use_module(library(lists), except([delete/3,subset/2])).
+:- use_module(library(lists)).
+:- use_module(library(q/qb)).
 :- use_module(library(semweb/rdf_db)).
 
 :- initialization(init).
@@ -47,11 +48,11 @@ A graph is non-lean if the substitutions made by subsumes_term/2
 
 
 
-lean(Graph):-
+lean(M, G) :-
   findall(
     rdf(S,P,O),
     (
-      rdf(S0, P, O0, Graph),
+      q(M, S0, P, O0, G),
       bnode_to_var(S0, S),
       bnode_to_var(O0, O)
     ),
@@ -74,8 +75,8 @@ lean(Graph):-
 
 % HELPERS %
 
-bnode_to_var(BNode, _):-
-  rdf_is_bnode(BNode), !.
+bnode_to_var(BNode, _) :-
+  q_is_bnode(BNode), !.
 bnode_to_var(Name, Name).
 
 
@@ -84,9 +85,11 @@ bnode_to_var(Name, Name).
 
 % INITIALIZATION %
 
-init:-
-  rdf_bnode(X),
-  rdf_bnode(Y),
-  rdf_assert(rdf:a, rdf:p, X, test),
-  rdf_assert(Y, rdf:p, X, test),
-  rdf_assert(rdf:b, rdf:p, X, test).
+init :-
+  M = rdf,
+  rdf_equal(ex:lean, G),
+  qb_bnode(X),
+  qb_bnode(Y),
+  qb(M, rdf:a, rdf:p, X, G),
+  qb(M, Y, rdf:p, X, G),
+  qb(M, rdf:b, rdf:p, X, G).
