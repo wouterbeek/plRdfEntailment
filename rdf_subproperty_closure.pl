@@ -80,6 +80,7 @@ cl_{i+1}(s)_{\leq_i} :=
 
 :- use_module(library(lists), except([delete/3])).
 :- use_module(library(pairs)).
+:- use_module(library(q/qb)).
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(semweb/rdfs), except([rdfs_label/3])).
 
@@ -91,7 +92,7 @@ cl_{i+1}(s)_{\leq_i} :=
 
 :- initialization(init_subproperty_test).
 
-:- rdf_reset_prefix(ex, 'http://example.org/').
+:- qb_alias(ex, 'http://example.org/').
 
 
 
